@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+// Note Fatal|FatalF are also useful methods,
+// to stop further execution within the same test.
 func TestAdd(t *testing.T) {
 	t.Parallel()
 	var want float64 = 4
