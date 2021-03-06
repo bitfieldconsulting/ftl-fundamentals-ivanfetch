@@ -14,6 +14,7 @@ type testCase struct {
 	b           float64
 	want        float64
 	description string
+	errExpected bool
 }
 
 func TestAdd(t *testing.T) {
@@ -86,7 +87,6 @@ func TestSubtract(t *testing.T) {
 		}
 	}
 }
-
 func TestMultiply(t *testing.T) {
 	// Define test cases
 	testCases := []testCase{
@@ -115,6 +115,38 @@ func TestMultiply(t *testing.T) {
 		got := calculator.Multiply(c.a, c.b)
 		if got != c.want {
 			t.Errorf("want %f, got %f, while testing %s. The function call was: Multiply(%f, %f)", c.want, got, c.description, c.a, c.b)
+		}
+	}
+}
+
+func TestDivide(t *testing.T) {
+	// Define test cases
+	testCases := []testCase{
+		{
+			description: "two positive numbers whos quotient is positive",
+			a:           20,
+			b:           2,
+			want:        11,
+		},
+		{
+			description: " a positive and negative number whos quotient is negative",
+			a:           10,
+			b:           -2,
+			want:        -5,
+		},
+		{
+			description: "a positive decimal and negative decimal whos quotient is a negative decimal",
+			a:           8.4,
+			b:           -2.5,
+			want:        -3.7,
+		},
+	}
+
+	t.Parallel()
+	for _, c := range testCases {
+		got := calculator.Divide(c.a, c.b)
+		if got != c.want {
+			t.Errorf("want %f, got %f, while testing %s. The function call was: Divide(%f, %f)", c.want, got, c.description, c.a, c.b)
 		}
 	}
 }
