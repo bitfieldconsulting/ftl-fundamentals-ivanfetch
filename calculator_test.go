@@ -2,7 +2,9 @@ package calculator_test
 
 import (
 	"calculator"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 // Note Fatal|FatalF are also useful methods,
@@ -53,6 +55,30 @@ func TestAdd(t *testing.T) {
 			t.Errorf("want %v, got %v, while testing %s. The function call was: Add(%v, %v)", c.want, got, c.description, c.a, c.b)
 		}
 	}
+}
+
+// Generate 100 random test-cases for Add()
+func TestAddRandomly(t *testing.T) {
+	t.Parallel()
+	rand.Seed(time.Now().UnixNano())
+
+	// logs are viewable using `go test -v`
+	t.Log("Beginning random test-cases for Add(). . .")
+
+	for i := 0; i < 100; i++ {
+		// rand.Float64() returns a number in 0.0-1.0
+		// Use another randomly-generated int to vary the whole number.
+		a := rand.Float64() * float64(rand.Intn(500))
+		b := rand.Float64() * float64(rand.Intn(500))
+		want := a + b
+		t.Logf("Random test %d: Add(%v, %v), wants %v", i, a, b, want)
+		got := calculator.Add(a, b)
+		if got != want {
+			t.Errorf("want %v, got %v, while testing randomly-generated cases. The function call was: Add(%v, %v)", want, got, a, b)
+		}
+	}
+
+	t.Log("Completed random test-cases for Add(). . .")
 }
 
 func TestSubtract(t *testing.T) {
