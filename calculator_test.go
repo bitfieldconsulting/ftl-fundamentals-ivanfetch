@@ -50,7 +50,7 @@ func TestAdd(t *testing.T) {
 	for _, c := range testCases {
 		got := calculator.Add(c.a, c.b)
 		if got != c.want {
-			t.Errorf("want %f, got %f, while testing %s. The function call was: Add(%f, %f)", c.want, got, c.description, c.a, c.b)
+			t.Errorf("want %v, got %v, while testing %s. The function call was: Add(%v, %v)", c.want, got, c.description, c.a, c.b)
 		}
 	}
 }
@@ -83,7 +83,7 @@ func TestSubtract(t *testing.T) {
 	for _, c := range testCases {
 		got := calculator.Subtract(c.a, c.b)
 		if got != c.want {
-			t.Errorf("want %f, got %f, while testing %s. The function call was: Subtract(%f, %f)", c.want, got, c.description, c.a, c.b)
+			t.Errorf("want %v, got %v, while testing %s. The function call was: Subtract(%v, %v)", c.want, got, c.description, c.a, c.b)
 		}
 	}
 }
@@ -114,7 +114,7 @@ func TestMultiply(t *testing.T) {
 	for _, c := range testCases {
 		got := calculator.Multiply(c.a, c.b)
 		if got != c.want {
-			t.Errorf("want %f, got %f, while testing %s. The function call was: Multiply(%f, %f)", c.want, got, c.description, c.a, c.b)
+			t.Errorf("want %v, got %v, while testing %s. The function call was: Multiply(%v, %v)", c.want, got, c.description, c.a, c.b)
 		}
 	}
 }
@@ -153,12 +153,12 @@ func TestDivide(t *testing.T) {
 	for _, c := range testCases {
 		err, got := calculator.Divide(c.a, c.b)
 		if err != nil && c.errExpected == false {
-			t.Errorf("error received while testing %s. The function call was: Divide(%f, %f), and the error was: %v", c.description, c.a, c.b, err)
+			t.Errorf("error received while testing %s. The function call was: Divide(%v, %v), and the error was: %v", c.description, c.a, c.b, err)
 		}
 
 		// Only fail on got != want if an error was not expected
 		if c.errExpected == false && got != c.want {
-			t.Errorf("want %f, got %f, while testing %s. The function call was: Divide(%f, %f)", c.want, got, c.description, c.a, c.b)
+			t.Errorf("want %v, got %v, while testing %s. The function call was: Divide(%v, %v)", c.want, got, c.description, c.a, c.b)
 		}
 	}
 }
