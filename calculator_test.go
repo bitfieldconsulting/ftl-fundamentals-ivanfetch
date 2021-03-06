@@ -123,10 +123,17 @@ func TestDivide(t *testing.T) {
 	// Define test cases
 	testCases := []testCase{
 		{
+			description: "dividing by zero",
+			a:           2,
+			b:           0,
+			want:        123456789,
+			errExpected: true,
+		},
+		{
 			description: "two positive numbers whos quotient is positive",
 			a:           20,
 			b:           2,
-			want:        11,
+			want:        10,
 		},
 		{
 			description: " a positive and negative number whos quotient is negative",
@@ -138,13 +145,13 @@ func TestDivide(t *testing.T) {
 			description: "a positive decimal and negative decimal whos quotient is a negative decimal",
 			a:           8.4,
 			b:           -2.5,
-			want:        -3.7,
+			want:        -3.3600000000000003,
 		},
 	}
 
 	t.Parallel()
 	for _, c := range testCases {
-		got, err := calculator.Divide(c.a, c.b)
+		err, got := calculator.Divide(c.a, c.b)
 		if err != nil && c.errExpected == false {
 			t.Errorf("error received while testing %s. The function call was: Divide(%f, %f), and the error was: %v", c.description, c.a, c.b, err)
 		}
