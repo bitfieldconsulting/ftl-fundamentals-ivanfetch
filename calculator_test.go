@@ -144,7 +144,6 @@ func TestMultiply(t *testing.T) {
 		}
 	}
 }
-
 func TestDivide(t *testing.T) {
 	// Define test cases
 	testCases := []testCase{
@@ -185,6 +184,36 @@ func TestDivide(t *testing.T) {
 		// Only fail on got != want if an error was not expected
 		if c.errExpected == false && got != c.want {
 			t.Errorf("want %v, got %v, while testing %s. The function call was: Divide(%v, %v)", c.want, got, c.description, c.a, c.b)
+		}
+	}
+}
+
+func TestSqrt(t *testing.T) {
+	// Define test cases
+	testCases := []testCase{
+		{
+			description: "negative input",
+			a:           -64,
+			want:        123456789,
+			errExpected: true,
+		},
+		{
+			description: "64",
+			a:           64,
+			want:        8,
+		},
+	}
+
+	t.Parallel()
+	for _, c := range testCases {
+		err, got := calculator.Sqrt(c.a)
+		if err != nil && c.errExpected == false {
+			t.Errorf("error received while testing %s. The function call was: Sqrt(%v), and the error was: %v", c.description, c.a, err)
+		}
+
+		// Only fail on got != want if an error was not expected
+		if c.errExpected == false && got != c.want {
+			t.Errorf("want %v, got %v, while testing %s. The function call was: Sqrt(%v)", c.want, got, c.description, c.a)
 		}
 	}
 }
