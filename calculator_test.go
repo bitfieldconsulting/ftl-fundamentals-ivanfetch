@@ -144,8 +144,13 @@ func TestDivide(t *testing.T) {
 
 	t.Parallel()
 	for _, c := range testCases {
-		got := calculator.Divide(c.a, c.b)
-		if got != c.want {
+		got, err := calculator.Divide(c.a, c.b)
+		if err != nil && c.errExpected == false {
+			t.Errorf("error received while testing %s. The function call was: Divide(%f, %f), and the error was: %v", c.description, c.a, c.b, err)
+		}
+
+		// Only fail on got != want if an error was not expected
+		if c.errExpected == false && got != c.want {
 			t.Errorf("want %f, got %f, while testing %s. The function call was: Divide(%f, %f)", c.want, got, c.description, c.a, c.b)
 		}
 	}
