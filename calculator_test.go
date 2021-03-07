@@ -363,7 +363,7 @@ func TestExpression(t *testing.T) {
 	testCases := []expressionTestCase{
 		{
 			description: "an expression with two positive numbers which sum to a positive",
-			e:           "2 + 2",
+			e:           "2+2",
 			want:        4,
 		},
 		{
