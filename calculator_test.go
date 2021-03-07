@@ -362,12 +362,12 @@ func TestExpression(t *testing.T) {
 	// Define test cases
 	testCases := []expressionTestCase{
 		{
-			description: "two positive numbers which sum to a positive",
+			description: "an expression with two positive numbers which sum to a positive",
 			e:           "2 + 2",
 			want:        4,
 		},
 		{
-			description: "an invalid operator",
+			description: "an expression with an invalid operator",
 			e:           "2 X 2",
 			want:        123456789,
 			errExpected: true,
@@ -383,14 +383,14 @@ func TestExpression(t *testing.T) {
 	t.Parallel()
 
 	for _, c := range testCases {
-		err, got := calculator.Expression("c.e")
+		err, got := calculator.Expression(c.e)
 		if err != nil && c.errExpected == false {
-			t.Errorf("error received while testing %s. The function call was: Expression(%v), and the error was: %v", c.description, c.a, err)
+			t.Errorf("error received while testing %s. The function call was: Expression(%v), and the error was: %v", c.description, c.e, err)
 		}
 
 		// Only fail on got != want if an error was not expected
 		if c.errExpected == false && got != c.want {
-			t.Errorf("want %v, got %v, while testing %s. The function call was: Expression(%v)", c.want, got, c.description, c.a)
+			t.Errorf("want %v, got %v, while testing %s. The function call was: Expression(%v)", c.want, got, c.description, c.e)
 		}
 	}
 }
