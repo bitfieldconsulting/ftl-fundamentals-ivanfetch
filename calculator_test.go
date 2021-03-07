@@ -31,6 +31,14 @@ type variadicTestCase struct {
 	errExpected bool
 }
 
+// Test case for expressions (string parsed into numbers and an operator)
+type expressionTestCase struct {
+	e           string
+	want        float64
+	description string
+	errExpected bool
+}
+
 // Return a slice of N random numbers from 0-500
 func randFloat64Slice(n int) []float64 {
 	rand.Seed(time.Now().UnixNano())
@@ -346,6 +354,43 @@ func TestSqrt(t *testing.T) {
 		// Only fail on got != want if an error was not expected
 		if c.errExpected == false && got != c.want {
 			t.Errorf("want %v, got %v, while testing %s. The function call was: Sqrt(%v)", c.want, got, c.description, c.a)
+		}
+	}
+}
+
+func TestExpression(t *testing.T) {
+	// Define test cases
+	testCases := []expressionTestCase{
+		{
+			description: "two positive numbers which sum to a positive",
+			e:           "2 + 2",
+			want:        4,
+		},
+		{
+			description: "an invalid operator",
+			e:           "2 X 2",
+			want:        123456789,
+			errExpected: true,
+		},
+		{
+			description: "an invalid multi-expression",
+			e:           "2 + 2 * 2",
+			want:        123456789,
+			errExpected: true,
+		},
+	}
+
+	t.Parallel()
+
+	for _, c := range testCases {
+		err, got := calculator.Expression("c.e")
+		if err != nil && c.errExpected == false {
+			t.Errorf("error received while testing %s. The function call was: Expression(%v), and the error was: %v", c.description, c.a, err)
+		}
+
+		// Only fail on got != want if an error was not expected
+		if c.errExpected == false && got != c.want {
+			t.Errorf("want %v, got %v, while testing %s. The function call was: Expression(%v)", c.want, got, c.description, c.a)
 		}
 	}
 }
