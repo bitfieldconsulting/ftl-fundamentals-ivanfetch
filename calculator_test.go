@@ -367,6 +367,27 @@ func TestExpression(t *testing.T) {
 			want:        4,
 		},
 		{
+			description: "an expression with two positive numbers whos difference is negative",
+			e:           "2 - 9",
+			want:        -7,
+		},
+		{
+			description: "an expression with two positive numbers whos product is positive",
+			e:           "2 * 20",
+			want:        40,
+		},
+		{
+			description: "an expression that divides by zero",
+			e:           "2 / 0",
+			want:        123456789,
+			errExpected: true,
+		},
+		{
+			description: "an expression with two positive numbers whos quotient is positive",
+			e:           "20 / 2",
+			want:        10,
+		},
+		{
 			description: "an expression with an invalid operator",
 			e:           "2 X 2",
 			want:        123456789,
