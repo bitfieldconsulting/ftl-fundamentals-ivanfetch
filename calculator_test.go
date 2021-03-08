@@ -122,19 +122,20 @@ func TestAddVariadicRandomly(t *testing.T) {
 	// rand.Float64() returns a number in 0.0-1.0
 	// Use another randomly-generated int to vary the whole number.
 	a := rand.Float64() * float64(rand.Intn(500))
-	// b will be assigned multiple random float64 in a slice
-	b := randFloat64Slice(5)
+	b := rand.Float64() * float64(rand.Intn(500))
+	// v will be assigned multiple random float64 in a slice
+	v := randFloat64Slice(5)
 
 	// Get our own sum to compare to Add()
-	var want float64 = a
-	for _, x := range b {
+	var want float64 = a + b
+	for _, x := range v {
 		want += x
 	}
 
-	got := calculator.Add(a, b...)
-	t.Logf("Random variadic test: Add(%v, %v), wants %v, got %v", a, b, want, got)
+	got := calculator.Add(a, b, v...)
+	t.Logf("Random variadic test: Add(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
 	if got != want {
-		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Add(%v, %v)", want, got, a, b)
+		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Add(%v, %v, %v)", want, got, a, b, v)
 	}
 }
 
@@ -179,19 +180,20 @@ func TestSubtractVariadicRandomly(t *testing.T) {
 	// rand.Float64() returns a number in 0.0-1.0
 	// Use another randomly-generated int to vary the whole number.
 	a := rand.Float64() * float64(rand.Intn(500))
-	// b will be assigned multiple random float64 in a slice
-	b := randFloat64Slice(5)
+	b := rand.Float64() * float64(rand.Intn(500))
+	// v will be assigned multiple random float64 in a slice
+	v := randFloat64Slice(5)
 
 	// Get our own difference to compare to Subtract()
-	var want float64 = a
-	for _, x := range b {
+	var want float64 = a - b
+	for _, x := range v {
 		want -= x
 	}
 
-	got := calculator.Subtract(a, b...)
-	t.Logf("Random variadic test: Subtract(%v, %v), wants %v, got %v", a, b, want, got)
+	got := calculator.Subtract(a, b, v...)
+	t.Logf("Random variadic test: Subtract(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
 	if got != want {
-		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Subtract(%v, %v)", want, got, a, b)
+		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Subtract(%v, %v, %v)", want, got, a, b, v)
 	}
 }
 
@@ -235,19 +237,20 @@ func TestMultiplyVariadicRandomly(t *testing.T) {
 	// rand.Float64() returns a number in 0.0-1.0
 	// Use another randomly-generated int to vary the whole number.
 	a := rand.Float64() * float64(rand.Intn(500))
-	// b will be assigned multiple random float64 in a slice
-	b := randFloat64Slice(5)
+	b := rand.Float64() * float64(rand.Intn(500))
+	// v will be assigned multiple random float64 in a slice
+	v := randFloat64Slice(5)
 
 	// Get our own product to compare to Multiply()
-	var want float64 = a
-	for _, x := range b {
+	var want float64 = a * b
+	for _, x := range v {
 		want = want * x
 	}
 
-	got := calculator.Multiply(a, b...)
-	t.Logf("Random variadic test: Multiply(%v, %v), wants %v, got %v", a, b, want, got)
+	got := calculator.Multiply(a, b, v...)
+	t.Logf("Random variadic test: Multiply(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
 	if got != want {
-		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Multiply(%v, %v)", want, got, a, b)
+		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Multiply(%v, %v, %v)", want, got, a, b, v)
 	}
 }
 
@@ -303,28 +306,35 @@ func TestDivideVariadicRandomly(t *testing.T) {
 	// rand.Float64() returns a number in 0.0-1.0
 	// Use another randomly-generated int to vary the whole number.
 	a := rand.Float64() * float64(rand.Intn(500))
-	// b will be assigned multiple random float64 in a slice
-	b := randFloat64Slice(5)
+	b := rand.Float64() * float64(rand.Intn(500))
+
+	// Avoid dividing by 0
+	if b == 0 {
+		b += 0.1
+	}
+
+	// v will be assigned multiple random float64 in a slice
+	v := randFloat64Slice(5)
 
 	// Get our own quotient to compare to Divide()
 	// Also change any randomly-generated 0.0s, to avoid dividing-by-zero!
-	var want float64 = a
-	for i, x := range b {
+	var want float64 = a / b
+	for i, x := range v {
 		if x == 0 {
 			x += 0.1
-			b[i] = x // change the slice
+			v[i] = x // change the slice
 		}
 		want = want / x
 	}
 
-	err, got := calculator.Divide(a, b...)
+	err, got := calculator.Divide(a, b, v...)
 	if err != nil {
-		t.Errorf("error received while testing a random variadic case. The function call was: Divide(%v, %v), and the error was: %v", a, b, err)
+		t.Errorf("error received while testing a random variadic case. The function call was: Divide(%v, %v, %v), and the error was: %v", a, b, v, err)
 	}
 
-	t.Logf("Random variadic test: Divide(%v, %v), wants %v, got %v", a, b, want, got)
+	t.Logf("Random variadic test: Divide(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
 	if got != want {
-		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Divide(%v, %v)", want, got, a, b)
+		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Divide(%v, %v, %v)", want, got, a, b, v)
 	}
 }
 

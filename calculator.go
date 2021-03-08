@@ -2,7 +2,6 @@
 package calculator
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"regexp"
@@ -10,60 +9,46 @@ import (
 )
 
 // Add takes two numbers and returns the result of adding them together.
-func Add(a float64, b ...float64) float64 {
-	r := a + b[0]
-
-	// If b contains more than 1 element,
-	// call ourself with the current result and those remaining elements.
-	if len(b[1:]) > 0 {
-		r = Add(r, b[1:]...)
+func Add(a, b float64, v ...float64) float64 {
+	r := a + b
+	for _, x := range v {
+		r += x
 	}
 	return r
 }
 
 // Subtract takes two numbers and returns the result of subtracting the second
 // from the first.
-func Subtract(a float64, b ...float64) float64 {
-	r := a - b[0]
-
-	// If b contains more than 1 element,
-	// call ourself with the current result and those remaining elements.
-	if len(b[1:]) > 0 {
-		r = Subtract(r, b[1:]...)
+func Subtract(a, b float64, v ...float64) float64 {
+	r := a - b
+	for _, x := range v {
+		r -= x
 	}
 	return r
 }
 
 // Multiply takes two numbers and returns the result of multiplying them together.
-func Multiply(a float64, b ...float64) float64 {
-	r := a * b[0]
-
-	// If b contains more than 1 element,
-	// call ourself with the current result and those remaining elements.
-	if len(b[1:]) > 0 {
-		r = Multiply(r, b[1:]...)
+func Multiply(a, b float64, v ...float64) float64 {
+	r := a * b
+	for _, x := range v {
+		r *= x
 	}
 	return r
 }
 
 // Divide takes two numbers and returns the result of dividing the second
 // from the first.
-func Divide(a float64, b ...float64) (error, float64) {
-	var err error // potential error from recursive call to Divide()
-
-	if b[0] == 0 {
-		return errors.New(fmt.Sprintf("divide-by-zero for Divide(%f, %f)", a, b[0])), 0.0
+func Divide(a, b float64, v ...float64) (error, float64) {
+	if b == 0 {
+		return fmt.Errorf("divide-by-zero for Divide(%f, %f)", a, b), 0.0
 	}
 
-	r := a / b[0]
-
-	// If b contains more than 1 element,
-	// call ourself with the current result and those remaining elements.
-	if len(b[1:]) > 0 {
-		err, r = Divide(r, b[1:]...)
-		if err != nil {
-			return err, r
+	r := a / b
+	for i, x := range v {
+		if x == 0 {
+			return fmt.Errorf("divide-by-zero for Divide(%f, %f), in iteration %v processing variadic float64", r, x, i), 0.0
 		}
+		r /= x
 	}
 	return nil, r
 }
@@ -71,7 +56,7 @@ func Divide(a float64, b ...float64) (error, float64) {
 // Sqrt returns the square root of a number
 func Sqrt(a float64) (error, float64) {
 	if a == 0 {
-		return errors.New(fmt.Sprintf("cannot-get-square-root-of-a-negative-number for Sqrt(%f)", a)), 0.0
+		return fmt.Errorf("cannot-get-square-root-of-a-negative-number for Sqrt(%f)", a), 0.0
 	}
 
 	return nil, math.Sqrt(a)
@@ -89,17 +74,17 @@ func Expression(e string) (error, float64) {
 	// THe fields include the original string,
 	// so len(fields) is off-by-one.
 	if len(fields) < 3 {
-		return errors.New(fmt.Sprintf("nable to parse expression \"%s\"", e)), 0.0
+		return fmt.Errorf("nable to parse expression \"%s\"", e), 0.0
 	}
 
 	a, err := strconv.ParseFloat(fields[1], 64)
 	if err != nil {
-		return errors.New(fmt.Sprintf("unable to parse \"%s\" to a float64 in expression \"%s\"", fields[1], e)), 0.0
+		return fmt.Errorf("unable to parse \"%s\" to a float64 in expression \"%s\"", fields[1], e), 0.0
 	}
 
 	b, err := strconv.ParseFloat(fields[3], 64)
 	if err != nil {
-		return errors.New(fmt.Sprintf("unable to parse \"%s\" to a float64 in expression \"%s\"", fields[3], e)), 0.0
+		return fmt.Errorf("unable to parse \"%s\" to a float64 in expression \"%s\"", fields[3], e), 0.0
 	}
 
 	var operator string = fields[2]
@@ -116,7 +101,7 @@ func Expression(e string) (error, float64) {
 		return Divide(a, b)
 	// We should never get here because the regular expression would fail to parse with an invalid operator.
 	default:
-		return errors.New(fmt.Sprintf("unknown operator %s in expression \"%s\"", operator, e)), 0.0
+		return fmt.Errorf("unknown operator %s in expression \"%s\"", operator, e), 0.0
 
 	}
 }
