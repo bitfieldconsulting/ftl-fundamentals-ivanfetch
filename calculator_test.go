@@ -19,26 +19,6 @@ type testCase struct {
 	errExpected bool
 }
 
-// This repeats the above struct,
-// but b is a slice-of-float64 instead.
-// Re-using the same struct for variadic and non-variadic would be nice,
-// but separate structs makes test more readable.
-type variadicTestCase struct {
-	a           float64
-	b           []float64
-	want        float64
-	description string
-	errExpected bool
-}
-
-// Test case for expressions (string parsed into numbers and an operator)
-type expressionTestCase struct {
-	e           string
-	want        float64
-	description string
-	errExpected bool
-}
-
 // Return a slice of N random numbers from 0-500
 func randFloat64Slice(n int) []float64 {
 	rand.Seed(time.Now().UnixNano())
@@ -370,7 +350,11 @@ func TestSqrt(t *testing.T) {
 
 func TestExpression(t *testing.T) {
 	// Define test cases
-	testCases := []expressionTestCase{
+	testCases := []struct {
+	e, description           string
+	want        float64
+	errExpected bool
+}{
 		{
 			description: "an expression with two positive numbers which sum to a positive",
 			e:           "2+2",
