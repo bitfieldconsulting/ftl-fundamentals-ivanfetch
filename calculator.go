@@ -4,8 +4,7 @@ package calculator
 import (
 	"fmt"
 	"math"
-	"regexp"
-	"strconv"
+	"strings"
 )
 
 // Add takes two numbers and returns the result of adding them together.
@@ -63,31 +62,20 @@ func Sqrt(a float64) (error, float64) {
 }
 
 func Expression(e string) (error, float64) {
-	// This regular expression matches:
-	//   (\d+\.?\d*) - one or more digits, optionally with a decimal and more digits
-	//   \s* - 0 or more space
-	//   ([\+\-\*\/]) - one of the operators: + - * or /
-	//   \s* - 0 or more space
-	//   (\d+\.?\d*) - one or more digits, optionally with a decimal and more digits
-	re := regexp.MustCompile(`^(\d+\.?\d*)\s*([\+\-\*\/])\s*(\d+\.?\d*)`)
-	fields := re.FindStringSubmatch(e)
-	// THe fields include the original string,
-	// so len(fields) is off-by-one.
-	if len(fields) < 3 {
-		return fmt.Errorf("nable to parse expression \"%s\"", e), 0.0
-	}
+	var a, b float64
+	var operator string
 
-	a, err := strconv.ParseFloat(fields[1], 64)
+	strings.ReplaceAll(e, " ", "") // remove all spaces
+
+	t, err := fmt.Sscanf(e, "%f%1s%f", &a, &operator, &b)
 	if err != nil {
-		return fmt.Errorf("unable to parse \"%s\" to a float64 in expression \"%s\"", fields[1], e), 0.0
+		return fmt.Errorf("Expression() error while parsing %q: %v", e, err), 0.0
 	}
 
-	b, err := strconv.ParseFloat(fields[3], 64)
-	if err != nil {
-		return fmt.Errorf("unable to parse \"%s\" to a float64 in expression \"%s\"", fields[3], e), 0.0
+	// t is the number of fields parsed by fmt.Sscanf().
+	if t < 3 {
+		return fmt.Errorf("nable to parse expression %q", e), 0.0
 	}
-
-	var operator string = fields[2]
 
 	switch operator {
 	case "+":
@@ -97,11 +85,10 @@ func Expression(e string) (error, float64) {
 	case "*":
 		return nil, Multiply(a, b)
 	case "/":
-		// Divide() inclludes its own error, although, should we wrap this?
+		// Divide() inclludes its own erro
 		return Divide(a, b)
-	// We should never get here because the regular expression would fail to parse with an invalid operator.
+	// We should never get here because the function input would fail to parse.
 	default:
-		return fmt.Errorf("unknown operator %s in expression \"%s\"", operator, e), 0.0
-
+		return fmt.Errorf("unknown operator %s in expression %q", operator, e), 0.0
 	}
 }
