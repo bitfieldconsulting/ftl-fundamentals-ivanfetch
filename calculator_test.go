@@ -11,6 +11,7 @@ import (
 // to stop further execution within the same test.
 
 // Express test-case inputs and desired outputs
+// This is shared by multiple tests.
 type testCase struct {
 	a           float64
 	b           float64
@@ -60,8 +61,6 @@ func TestAdd(t *testing.T) {
 
 	t.Parallel()
 
-	// Fun fact: I initially called this variable `case` which is a keyword.
-	// The error did not make that obvious. Fun rabbit-hole.
 	for _, c := range testCases {
 		got := calculator.Add(c.a, c.b)
 		if got != c.want {
@@ -201,6 +200,7 @@ func TestMultiply(t *testing.T) {
 	}
 
 	t.Parallel()
+
 	for _, c := range testCases {
 		got := calculator.Multiply(c.a, c.b)
 		if got != c.want {
@@ -265,6 +265,7 @@ func TestDivide(t *testing.T) {
 	}
 
 	t.Parallel()
+
 	for _, c := range testCases {
 		err, got := calculator.Divide(c.a, c.b)
 		if err != nil && c.errExpected == false {
@@ -335,6 +336,7 @@ func TestSqrt(t *testing.T) {
 	}
 
 	t.Parallel()
+
 	for _, c := range testCases {
 		err, got := calculator.Sqrt(c.a)
 		if err != nil && c.errExpected == false {
@@ -348,13 +350,16 @@ func TestSqrt(t *testing.T) {
 	}
 }
 
+// Test a calculator "expression,"
+// a string representation of an operation like 1 + 8
 func TestExpression(t *testing.T) {
 	// Define test cases
+	// This anonymous struct has no name, as its only used here.
 	testCases := []struct {
-	e, description           string
-	want        float64
-	errExpected bool
-}{
+		e, description string
+		want           float64
+		errExpected    bool
+	}{
 		{
 			description: "an expression with two positive numbers which sum to a positive",
 			e:           "2+2",
