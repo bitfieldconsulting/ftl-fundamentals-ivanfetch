@@ -42,12 +42,12 @@ type expressionTestCase struct {
 // Return a slice of N random numbers from 0-500
 func randFloat64Slice(n int) []float64 {
 	rand.Seed(time.Now().UnixNano())
-	// TODO: Should this be pre-allocated instead of using append()?
-	var r []float64
+	r := make([]float64, n)
 
-	for i := 0; i < n; i++ {
+	// This `range` serves to loop the right number of times for the size of r
+	for i := range r {
 		x := rand.Float64() * float64(rand.Intn(500))
-		r = append(r, x)
+		r[i] = x
 	}
 	return r
 }
