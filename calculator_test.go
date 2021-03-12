@@ -3,6 +3,8 @@ package calculator_test
 import (
 	"calculator"
 	"math/rand"
+	"reflect"
+	"runtime"
 	"testing"
 	"time"
 )
@@ -10,14 +12,9 @@ import (
 // Note Fatal|FatalF are also useful methods,
 // to stop further execution within the same test.
 
-// Express test-case inputs and desired outputs
-// This is shared by multiple tests.
-type testCase struct {
-	a           float64
-	b           float64
-	want        float64
-	description string
-	errExpected bool
+// Return the name of a function.
+func getFuncName(i interface{}) string {
+	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
 
 // Return a slice of N random numbers from 0-500
@@ -33,38 +30,88 @@ func randFloat64Slice(n int) []float64 {
 	return r
 }
 
-func TestAdd(t *testing.T) {
+// Test Add(), Subtract(), and Multiply()
+func TestAddSubtractMultiply(t *testing.T) {
 	// Define test cases
-	//
-	// Reference RE: `cases := []testCases` vs. `var cases ...`
-	// ways to define this variable: https://blog.golang.org/slices-intro
-	testCases := []testCase{
+	// This anonymous struct has no name, as its only used here.
+	testCases := []struct {
+		function    func(float64, float64, ...float64) float64
+		a           float64
+		b           float64
+		want        float64
+		description string
+	}{
 		{
+			function:    calculator.Add,
 			description: "two positive numbers which sum to a positive",
 			a:           2,
 			b:           2,
 			want:        4,
 		},
 		{
+			function:    calculator.Add,
 			description: "a positive and negative number which sum to a positive",
 			a:           7,
 			b:           -2,
 			want:        5,
 		},
 		{
+			function:    calculator.Add,
 			description: "a positive and negative number which sum to a negative",
 			a:           3,
 			b:           -5,
 			want:        -2,
+		},
+		{
+			function:    calculator.Subtract,
+			description: "two positive numbers whos difference is negative",
+			a:           2,
+			b:           9,
+			want:        -7,
+		},
+		{
+			function:    calculator.Subtract,
+			description: "two positive numbers whos difference is positive",
+			a:           7,
+			b:           2,
+			want:        5,
+		},
+		{
+			function:    calculator.Subtract,
+			description: "one positive and one negative decimal number whos difference is a positive decimal",
+			a:           3,
+			b:           -2.5,
+			want:        5.5,
+		},
+		{
+			function:    calculator.Multiply,
+			description: "two positive numbers whos product is positive",
+			a:           2,
+			b:           20,
+			want:        40,
+		},
+		{
+			function:    calculator.Multiply,
+			description: " a positive and negative number whos product is negative",
+			a:           7,
+			b:           -2,
+			want:        -14,
+		},
+		{
+			function:    calculator.Multiply,
+			description: "a positive decimal and negative decimal whos product is a negative decimal",
+			a:           8.4,
+			b:           -2.5,
+			want:        -21,
 		},
 	}
 
 	t.Parallel()
 
 	for _, c := range testCases {
-		got := calculator.Add(c.a, c.b)
+		got := c.function(c.a, c.b)
 		if got != c.want {
-			t.Errorf("want %v, got %v, while testing %s. The function call was: Add(%v, %v)", c.want, got, c.description, c.a, c.b)
+			t.Errorf("want %v, got %v, while testing %s. The function call was: %s(%v, %v)", c.want, got, c.description, getFuncName(c.function), c.a, c.b)
 		}
 	}
 }
@@ -118,39 +165,6 @@ func TestAddVariadicRandomly(t *testing.T) {
 	}
 }
 
-func TestSubtract(t *testing.T) {
-	// Define test cases
-	testCases := []testCase{
-		{
-			description: "two positive numbers whos difference is negative",
-			a:           2,
-			b:           9,
-			want:        -7,
-		},
-		{
-			description: "two positive numbers whos difference is positive",
-			a:           7,
-			b:           2,
-			want:        5,
-		},
-		{
-			description: "one positive and one negative decimal number whos difference is a positive decimal",
-			a:           3,
-			b:           -2.5,
-			want:        5.5,
-		},
-	}
-
-	t.Parallel()
-
-	for _, c := range testCases {
-		got := calculator.Subtract(c.a, c.b)
-		if got != c.want {
-			t.Errorf("want %v, got %v, while testing %s. The function call was: Subtract(%v, %v)", c.want, got, c.description, c.a, c.b)
-		}
-	}
-}
-
 // Randomly test the variadic call to Subtract()
 func TestSubtractVariadicRandomly(t *testing.T) {
 	t.Parallel()
@@ -173,39 +187,6 @@ func TestSubtractVariadicRandomly(t *testing.T) {
 	t.Logf("Random variadic test: Subtract(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
 	if got != want {
 		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Subtract(%v, %v, %v)", want, got, a, b, v)
-	}
-}
-
-func TestMultiply(t *testing.T) {
-	// Define test cases
-	testCases := []testCase{
-		{
-			description: "two positive numbers whos product is positive",
-			a:           2,
-			b:           20,
-			want:        40,
-		},
-		{
-			description: " a positive and negative number whos product is negative",
-			a:           7,
-			b:           -2,
-			want:        -14,
-		},
-		{
-			description: "a positive decimal and negative decimal whos product is a negative decimal",
-			a:           8.4,
-			b:           -2.5,
-			want:        -21,
-		},
-	}
-
-	t.Parallel()
-
-	for _, c := range testCases {
-		got := calculator.Multiply(c.a, c.b)
-		if got != c.want {
-			t.Errorf("want %v, got %v, while testing %s. The function call was: Multiply(%v, %v)", c.want, got, c.description, c.a, c.b)
-		}
 	}
 }
 
@@ -236,7 +217,13 @@ func TestMultiplyVariadicRandomly(t *testing.T) {
 
 func TestDivide(t *testing.T) {
 	// Define test cases
-	testCases := []testCase{
+	testCases := []struct {
+		a           float64
+		b           float64
+		want        float64
+		description string
+		errExpected bool
+	}{
 		{
 			description: "dividing by zero",
 			a:           2,
@@ -321,7 +308,13 @@ func TestDivideVariadicRandomly(t *testing.T) {
 
 func TestSqrt(t *testing.T) {
 	// Define test cases
-	testCases := []testCase{
+	testCases := []struct {
+		a           float64
+		b           float64
+		want        float64
+		description string
+		errExpected bool
+	}{
 		{
 			description: "negative input",
 			a:           -64,
@@ -354,7 +347,6 @@ func TestSqrt(t *testing.T) {
 // a string representation of an operation like 1 + 8
 func TestExpression(t *testing.T) {
 	// Define test cases
-	// This anonymous struct has no name, as its only used here.
 	testCases := []struct {
 		e, description string
 		want           float64
