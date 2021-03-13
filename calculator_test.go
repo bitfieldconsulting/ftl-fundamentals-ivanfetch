@@ -110,7 +110,7 @@ func TestAddSubtractMultiply(t *testing.T) {
 
 	for _, c := range testCases {
 		got := c.function(c.a, c.b)
-		if got != c.want {
+		if c.want != got {
 			t.Errorf("want %v, got %v, while testing %s. The function call was: %s(%v, %v)", c.want, got, c.description, getFuncName(c.function), c.a, c.b)
 		}
 	}
@@ -132,7 +132,7 @@ func TestAddRandomly(t *testing.T) {
 		want := a + b
 		t.Logf("Random test %d: Add(%v, %v), wants %v", i, a, b, want)
 		got := calculator.Add(a, b)
-		if got != want {
+		if want != got {
 			t.Errorf("want %v, got %v, while testing randomly-generated cases. The function call was: Add(%v, %v)", want, got, a, b)
 		}
 	}
@@ -160,7 +160,7 @@ func TestAddVariadicRandomly(t *testing.T) {
 
 	got := calculator.Add(a, b, v...)
 	t.Logf("Random variadic test: Add(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
-	if got != want {
+	if want != got {
 		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Add(%v, %v, %v)", want, got, a, b, v)
 	}
 }
@@ -185,7 +185,7 @@ func TestSubtractVariadicRandomly(t *testing.T) {
 
 	got := calculator.Subtract(a, b, v...)
 	t.Logf("Random variadic test: Subtract(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
-	if got != want {
+	if want != got {
 		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Subtract(%v, %v, %v)", want, got, a, b, v)
 	}
 }
@@ -210,7 +210,7 @@ func TestMultiplyVariadicRandomly(t *testing.T) {
 
 	got := calculator.Multiply(a, b, v...)
 	t.Logf("Random variadic test: Multiply(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
-	if got != want {
+	if want != got {
 		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Multiply(%v, %v, %v)", want, got, a, b, v)
 	}
 }
@@ -254,13 +254,13 @@ func TestDivide(t *testing.T) {
 	t.Parallel()
 
 	for _, c := range testCases {
-		err, got := calculator.Divide(c.a, c.b)
-		if err != nil && c.errExpected == false {
+		got, err := calculator.Divide(c.a, c.b)
+		if err != nil && !c.errExpected {
 			t.Errorf("error received while testing %s. The function call was: Divide(%v, %v), and the error was: %v", c.description, c.a, c.b, err)
 		}
 
-		// Only fail on got != want if an error was not expected
-		if c.errExpected == false && got != c.want {
+		// Only fail on want != got if an error was not expected
+		if !c.errExpected && c.want != got {
 			t.Errorf("want %v, got %v, while testing %s. The function call was: Divide(%v, %v)", c.want, got, c.description, c.a, c.b)
 		}
 	}
@@ -295,13 +295,13 @@ func TestDivideVariadicRandomly(t *testing.T) {
 		want = want / x
 	}
 
-	err, got := calculator.Divide(a, b, v...)
+	got, err := calculator.Divide(a, b, v...)
 	if err != nil {
 		t.Errorf("error received while testing a random variadic case. The function call was: Divide(%v, %v, %v), and the error was: %v", a, b, v, err)
 	}
 
 	t.Logf("Random variadic test: Divide(%v, %v, %v), wants %v, got %v", a, b, v, want, got)
-	if got != want {
+	if want != got {
 		t.Errorf("want %v, got %v, while testing a random variadic case. The function call was: Divide(%v, %v, %v)", want, got, a, b, v)
 	}
 }
@@ -331,21 +331,21 @@ func TestSqrt(t *testing.T) {
 	t.Parallel()
 
 	for _, c := range testCases {
-		err, got := calculator.Sqrt(c.a)
-		if err != nil && c.errExpected == false {
+		got, err := calculator.Sqrt(c.a)
+		if err != nil && !c.errExpected {
 			t.Errorf("error received while testing %s. The function call was: Sqrt(%v), and the error was: %v", c.description, c.a, err)
 		}
 
-		// Only fail on got != want if an error was not expected
-		if c.errExpected == false && got != c.want {
+		// Only fail on want != got if an error was not expected
+		if !c.errExpected && c.want != got {
 			t.Errorf("want %v, got %v, while testing %s. The function call was: Sqrt(%v)", c.want, got, c.description, c.a)
 		}
 	}
 }
 
-// Test a calculator "expression,"
+// Test evaluating an expression,
 // a string representation of an operation like 1 + 8
-func TestExpression(t *testing.T) {
+func TestEvaluateExpression(t *testing.T) {
 	// Define test cases
 	testCases := []struct {
 		e, description string
@@ -395,13 +395,13 @@ func TestExpression(t *testing.T) {
 	t.Parallel()
 
 	for _, c := range testCases {
-		err, got := calculator.Expression(c.e)
-		if err != nil && c.errExpected == false {
+		got, err := calculator.EvaluateExpression(c.e)
+		if err != nil && !c.errExpected {
 			t.Errorf("error received while testing %s. The function call was: Expression(%v), and the error was: %v", c.description, c.e, err)
 		}
 
-		// Only fail on got != want if an error was not expected
-		if c.errExpected == false && got != c.want {
+		// Only fail on want != got if an error was not expected
+		if !c.errExpected && c.want != got {
 			t.Errorf("want %v, got %v, while testing %s. The function call was: Expression(%v)", c.want, got, c.description, c.e)
 		}
 	}
