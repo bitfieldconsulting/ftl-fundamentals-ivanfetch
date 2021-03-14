@@ -205,7 +205,7 @@ func TestMultiplyVariadicRandomly(t *testing.T) {
 	// Get our own product to compare to Multiply()
 	var want float64 = a * b
 	for _, x := range v {
-		want = want * x
+		want *= x
 	}
 
 	got := calculator.Multiply(a, b, v...)
@@ -292,7 +292,7 @@ func TestDivideVariadicRandomly(t *testing.T) {
 			x += 0.1
 			v[i] = x // change the slice
 		}
-		want = want / x
+		want /= x
 	}
 
 	got, err := calculator.Divide(a, b, v...)

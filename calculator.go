@@ -70,7 +70,7 @@ func EvaluateExpression(e string) (float64, error) {
 		return 0.0, fmt.Errorf("Expression() error while parsing %q: %v", e, err)
 	}
 
-	if numFields < 3 {
+	if numFields != 3 {
 		return 0.0, fmt.Errorf("nable to parse expression %q", e)
 	}
 
